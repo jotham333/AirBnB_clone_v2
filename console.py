@@ -1,3 +1,4 @@
+import re
 #!/usr/bin/python3
 """ Console Module """
 import cmd
@@ -119,17 +120,20 @@ class HBNBCommand(cmd.Cmd):
         class_name = args[0]
         params = {}
 
-        if class_name not in HBNBCommand.classes:
+        try:
+            class_instance = HBNBCommand.classes[class_name]()
+        except KeyError:
             print("** class doesn't exist **")
             return
 
         for arg in args[1:]:
-            if "=" in arg:
-                key, value = arg.split("=")
+            match = re.match(r"(\w+)=(.*)", arg)
+            if match:
+                key, value = match.groups()
                 if value.startswith('"') and value.endswith('"'):
                     # Handle string parameter
                     value = value[1:-1]  # Remove double quotes
-                    value = value.replace("_", " ")  # Replace underscores with spaces
+                    value = value.replace("_", " ")
                 elif "." in value:
                     # Handle float parameter
                     try:
@@ -142,13 +146,12 @@ class HBNBCommand(cmd.Cmd):
                         value = int(value)
                     except ValueError:
                         continue  # Skip invalid values
-                params[key] = value
+                setattr(class_instance, key, value)
             else:
                 print("** attribute name missing **")
                 return
-        newInstance = HBNBCommand.classes[class_name]()
-        newInstance.__dict__.update(params)
-        newInstance.save()
+        class_instance.save()
+        print(class_instance.id)
 
 
     def help_create(self):
