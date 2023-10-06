@@ -2,7 +2,7 @@
 from fabric.api import env, put, run
 import os
 
-env.hosts = ['100.25.111.179', '100.26.11.173']
+env.hosts = ['34.224.3.182', '54.237.225.149']
 
 def do_deploy(archive_path):
     """
